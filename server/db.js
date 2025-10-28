@@ -1,4 +1,5 @@
-// database logic
+// handler for connecting to database
+
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
