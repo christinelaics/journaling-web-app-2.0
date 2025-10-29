@@ -9,6 +9,7 @@ export default function EntryContent({ entry }: props) {
     <div>
       <h3>{entry.title}</h3>
       <p>{entry.content}</p>
+      <button>Delete</button>
     </div>
   );
 }
