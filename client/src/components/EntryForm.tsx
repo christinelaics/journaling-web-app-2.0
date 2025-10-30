@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { Entry } from "../types/types";
+import { useEntries } from "../hooks/useEntries";
 
 interface props {
-    onAdd: (entry: Entry) => void
+    onAdd: (entry: {title: string, content: string}) => void;
 }
 export default function EntryForm({onAdd}: props) {
     const [title, setTitle] = useState("");
@@ -10,16 +11,13 @@ export default function EntryForm({onAdd}: props) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const res = await fetch("http://localhost:3000/api/entries", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({title, content})
-        });
-        if (!res.ok) return alert("Failed to create entry");
-        const data = await res.json();
-        onAdd(data);
-        setTitle("");
-        setContent("")
+        try {
+            await onAdd({title, content});
+            setTitle("");
+            setContent("");
+        } catch {
+            alert("Failed to add entry")
+        }
     }
     return (
         <form onSubmit={handleSubmit}>

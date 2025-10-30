@@ -24,8 +24,19 @@ export function useEntries() {
         fetchEntries();
     }, []);
 
-    const addEntry = (newEntry: Entry) => {
-        setEntries((prev) => [newEntry, ...prev]);
+    const addEntry = async (newEntry: {title: string, content: string}) => {
+        try {
+            const res = await fetch(BASE_URL, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(newEntry)
+            });
+            if (!res.ok) throw new Error("Failed to add entry");
+            const data = await res.json();
+            setEntries(prev => [data, ...prev]);
+        } catch (err: any) {
+            setError(err.message || "Unknown error while adding entry");
+        }
     }
 
     const updateEntry = async (id: string, updated: { title: string; content: string }) => {
@@ -56,5 +67,5 @@ export function useEntries() {
         
     }
 
-    return { entries, setEntries, loading, error };
+    return { entries, setEntries, loading, error, addEntry, updateEntry, deleteEntry};
 }
