@@ -1,21 +1,44 @@
-import type { Entry } from "../types/types";
-import EntryContent from "./EntryContent";
+import { useEntriesContext } from "../context/EntriesContext";
 
-interface props {
-    entries: Entry[];
-    onDelete: (id: string) => void;
-    onUpdate: (id: string, updates:{title:string, content: string}) => void;
-}
+export default function EntryList() {
+  const { entries, selectedEntryId, setSelectedEntryId, setIsAddingEntry } = useEntriesContext();
+  const handleNewEntry = () => {
+    setIsAddingEntry(true);
+    setSelectedEntryId(null)
+  }
 
-export default function EntryList({entries, onUpdate, onDelete}: props) {
-    
-    if (entries.length === 0) return <p>No journal entries yet</p>
-    return (
-        <div>
-            {entries.map((entry) => (
-                <EntryContent key={entry._id} entry={entry} onDelete={onDelete} onUpdate={onUpdate}/>
-            ))}
-        </div>
-    )
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <h2>Journal Entries</h2>
+        <button onClick={handleNewEntry}>+ New</button>
+      </div>
 
+      {entries.length === 0 ? (
+        <p>No entries yet</p>
+      ) : (
+        <ul>
+          {entries.map((entry) => (
+            <li
+              key={entry._id}
+              onClick={() => setSelectedEntryId(entry._id)}
+              className={` ${
+                selectedEntryId === entry._id ? "border-1 rounded-md" : ""
+              }`}
+            >
+              <div className="p-2">
+                <h3 className="font-bold">{entry.title}</h3>
+                <p>
+                  {entry.content.slice(0, entry.content.lastIndexOf(" ", 25))}
+                  ...
+                </p>
+                <span>{entry.createdAt.split("T")[0]}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
